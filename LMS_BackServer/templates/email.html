@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Account Details</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="shortcut icon"
+        href="https://lh3.googleusercontent.com/pw/AP1GczNI4WBoUDPiYR1MDegOSzjQDSiqqNXgJeW55xzrHVNpbZ1CUOhZK4uXDfLtD67m6_Z-n6AOf7wkaEhGknVAbbGIU98ryTFnOwFvOkj_kvgKCIZcw0zQoq3FMsOfznoYZ4SfGii4F12s_Kp9sS36RLnV2ldrruKD_0AoB6I_Jb7Phe1wIZpQY8MOKHwHARqq8wr74qXuKn80pwUyIxbWAUiCWlwIaXlI5YzOLYBY3ntZjefxWWJY_M08LPIGA-nuXmwlHwS2Gp-enL_ODT5yfGFHK9SiClmCL1CbBVyxmaRb9YdWcF_Wqwmg1ymWQbJEgFm0ATBgYAwkroZbeUWP_Vez1IMwrJAzU8o8sMnM4UUH0G64y_HNbNG6RcTMhTGDHFUwh523ky9lgMEjOXtTDL8Zoc1_DjaIa5r3czSyD2Z6t9a_IukC-LbCtXEXxU9nRAAs22WROJPUnH3uovZgk6VvRNRWCHoG4Eum6OKOdwauNi_ZpLADgqRKl6ZLNmuZWAe7EaJCpRg97dDtXW4NDLK-__MG9XeITFnktWSOSGQkeDkrMZpawCfQzj8vJp3kauZS23DKcVz9GXKSTfiuT0tIimDlfWLqvJvcOXfLFB7kUh2zosrHNNVVvaxMM8dVxHx5Ksw08BYMNpdZThkcpsqm4IQMn6hTnjPBmMJ5sCU-aI9dn70FMKqxwX-L34lIkqusXhzG_udTxBHdIoa_SetZcrCf63Du9MEXR3oxrFGRjOPCwmQb8dj_7k1pxFE8KXvWX7ppgz5LOR78XQQcmWAMIo7VhWzdpQ0SSPTBVJvA7LpH6Fx14Wltk4OBu82mPNNS1pUS0BZkF6u6FwUz0dSfU-FbrGobsUgqpH-U_e_JPb4jaN51YQO1GI0bdq8Cz2oh6yHflSYDZTxsQXTNVft24uUz1F-fnOCaBPCumoHE_50w1M_TvrnODp2NbMnfKgpvHp8YOiXcVfKlkTTteYRUQLzB=w305-h238-s-no-gm?authuser=0"
+        type="image/x-icon">
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+    html {
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+        -moz-tab-size: 4;
+        tab-size: 4;
+        font-feature-settings: normal;
+        font-variation-settings: normal;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    *,
+    body {
+        font-size: 16px;
+        margin: 0;
+        line-height: inherit;
+        font-family: "Poppins", sans-serif;
+        font-weight: normal;
+    }
+
+    .logo-image {
+        width: auto;
+        height: 1.75rem;
+    }
+
+    @media (min-screen: 640px) {
+        .logo-image {
+            height: 2rem;
+        }
+    }
+
+</style>
+
+<body>
+
+    <section
+        style="max-width: 42rem; margin-left: auto; margin-right: auto; padding: 2rem 1.5rem; background-color: #111827;">
+        <header>
+            <a style="text-decoration: none;" target="_blank" href="http://localhost:5173">
+                <p style="margin-top: 0px; color: white; font-weight: bold; font-size: 2.2rem;">LOC</p>
+            </a>
+        </header>
+
+        <main style="margin-top: 3rem;">
+            <h2 style="color: #e5e7eb;">Hi <span style="font-weight: bold;">{{ username }}</span>,</h2>
+            <p style="color: #d1d5db; margin-bottom: 1rem; line-height: 2; margin-top: 1rem;">Welcome to <a
+                    href="http://localhost:5173"
+                    style="font-weight: bold; color: #e5e7eb; text-decoration: none;">Library of Congress</a>.</p>
+            <div style="color: #d1d5db;">
+                <p style="margin-bottom: 0.4rem;">Your Account Credentials:</p>
+                <div style="padding-left: 1.5rem;">
+                    <p>Username: <span style="font-weight: bold;">{{ username }}</span></p>
+                    <p>Password: <span style="font-weight: bold;">{{ password }}</span></p>
+                </div>
+            </div>
+            <p style="color: #d1d5db; margin-top: 3rem;">This is an automatically generated email. You can now login to
+                the website and admin panel using these credentials. Please do not share your credentials with anyone.
+                Please change your password after logging in and complete your profile.</p>
+            <p style="color: #d1d5db; margin-top: 3rem;">Thanks,<br>LMS team</p>
+        </main>
+
+        <footer style="margin-top: 3rem;">
+            <p style="color: #9ca3af; margin-top: 0.75rem;">© <span id="year"></span> <a href="http://localhost:5173"
+                    style="text-decoration: none; color: #9ca3af; font-weight: bold;">Library of Congress</a>. All
+                Rights Reserved.</p>
+        </footer>
+    </section>
+
+    <script>
+        document.getElementById("year").innerHTML = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+{
+  "name": "web.lms.pras",
+  "version": "0.0.1",
+  "displayName": "Web.lms.pras",
+  "description": "The Library Management System is a full-stack web application designed to streamline the management of library resources, providing an intuitive interface for both users and library staff. Built with React.js for the frontend and Django for the backend, this system offers a range of features for users to manage their profiles, borrow books online, and interact with other users, while providing comprehensive administrative tools for library staff.",
+  "author": "PRAS Samin",
+  "license": "MIT",
+  "homepage": "https://web.lms.pras/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PRASSamin/Library-Management-System"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.12.1",
+    "@xterm/xterm": "^5.5.0",
+    "axios": "^1.6.8",
+    "crypto-js": "^4.2.0",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "npm": "^10.8.0",
+    "ol": "^9.1.0",
+    "qrcode": "^1.5.3",
+    "react": "^18.2.0",
+    "react-advanced-cropper": "^0.19.6",
+    "react-alice-carousel": "^2.9.1",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3",
+    "react-slick": "^0.30.2",
+    "swiper": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "postcss": "^8.4.38",
+    "react-error-overlay": "^6.0.9",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.0"
+  }
+}

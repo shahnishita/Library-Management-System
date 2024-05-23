@@ -1,0 +1,86 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="node_modules/ol/ol.css">
+  <style>
+    .map {
+      width: 100%;
+      height: 400px;
+      cursor: -webkit-grab;
+      cursor: grab;
+    }
+
+    .ol-rotate-reset,
+    .ol-attribution {
+      display: none;
+    }
+
+    #info-openlayers {
+      a {
+        color: rgb(105, 170, 255);
+      }
+
+      color: white;
+      text-align: center;
+      padding: 2px 8px;
+      border-top-left-radius: 5px;
+      position: fixed;
+      bottom: 8px;
+      right: 8px;
+      font-size: 10px;
+      background-color: rgb(255, 255, 255);
+    }
+
+    .ol-zoom {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+
+    .ol-zoom-in,
+    .ol-zoom-out {
+      width: 25px;
+      height: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <div id="info-openlayers"><a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></div>
+  <script type="module" src="main.jsx"></script>
+
+
+  <script>
+    const map = document.getElementById("map");
+
+
+    map.addEventListener('wheel', (event) => {
+      if (event.deltaY > 0) {
+        map.style.cursor = 'zoom-out';
+        map,style.cursor = '-webkit-zoom-out';
+        setTimeout(() => {
+          map.style.cursor = 'grab';
+          map.style.cursor = '-webkit-grab';
+        }, 500)
+      } else if (event.deltaY < 0) {
+        map.style.cursor = 'zoom-in';
+        map.style.cursor = '-webkit-zoom-in';
+        setTimeout(() => {
+          map.style.cursor = 'grab';
+          map.style.cursor = '-webkit-grab';
+        }, 500)
+      }
+    }, {passive: true});
+
+  </script>
+
+</body>
+
+</html>
