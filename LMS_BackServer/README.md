@@ -61,12 +61,12 @@ Once the development server is running, you can access the admin panel at http:/
 
 ## Environment Variables
 
-### Create a .env file in the root of the backend folder and configure the following environment variables:
+Create a .env file in the root of the backend folder and configure the following environment variables:
 
-TOKEN_GENERATOR_CODE = YOUR_TOKEN_GENERATOR_CODE
-JWT_ENCRYPTION_KEY = YOUR_JWT_ENCRYPTION_KEY
-EMAIL_HOST_USERNAME = YOUR_SMTP_USERNAME
-EMAIL_HOST_PASSWORD = YOUR_SMTP_PASSWORD
+- TOKEN_GENERATOR_CODE = YOUR_TOKEN_GENERATOR_CODE
+- JWT_ENCRYPTION_KEY = YOUR_JWT_ENCRYPTION_KEY
+- EMAIL_HOST_USERNAME = YOUR_SMTP_USERNAME
+- EMAIL_HOST_PASSWORD = YOUR_SMTP_PASSWORD
 
 ## Technologies Used
 - Python
