@@ -17,3 +17,9 @@ All notable changes to this project will be documented in this file.
 - Session verification endpoint in Django backend.
 - Basic UI/UX design and styling.
 
+
+## [Release - v0.0.2] - 2023-05-26
+
+### Fixed
+- Completed some previously incomplete features and pages.
+- Fixed all detected issues with the frontend and backend.
