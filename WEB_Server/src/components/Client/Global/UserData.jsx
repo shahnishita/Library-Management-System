@@ -100,6 +100,7 @@ const UserProvider = ({ children }) => {
         fetchNotifications,
         notifications,
         isSessionExpired,
+        setIsSessionExpired
       }}
     >
       {children}

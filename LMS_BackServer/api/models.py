@@ -30,7 +30,7 @@ class booksList(models.Model):
     ISBN = models.CharField(max_length=150, blank=False, null=False)
     website = models.CharField(max_length=150, blank=True, null=True)
     description = models.CharField(max_length=1000, blank=True, null=True)
-    label_url = models.CharField(max_length=500, blank=True, null=True)
+    label_url = models.CharField(max_length=4000, blank=True, null=True)
     created_at = models.DateTimeField(blank=False, null=False, editable=True, default=timezone.now)
     
     def save(self, *args, **kwargs):
@@ -52,8 +52,11 @@ class booksList(models.Model):
         else:
             self.isAvailable = True
 
-        super().save(*args, **kwargs)
+        MostPopularBooks.objects.get_or_create(book=get_object_or_404(booksList, id=self.id))
 
+        super().save(*args, **kwargs)
+        
+        
 
 class libraryImage(models.Model):
     id = models.BigAutoField(primary_key = True)
@@ -214,8 +217,6 @@ class BookBorrow(models.Model):
             return
         self._is_saving = True
 
-        if self.taken_time and not self.return_date:
-            self.return_date = self.taken_time + timedelta(days=int(self.borrowed_for))
         if not self.borrow_id:
             self.borrow_id = hashlib.sha256((self.user.username + self.requested_time.strftime('%Y-%m-%d %H:%M:%S')).encode()).hexdigest()
         if self.status == 'Approved':
@@ -327,3 +328,10 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.message[:50]
+    
+    
+
+class MostPopularBooks(models.Model):
+    book = models.ForeignKey(booksList, on_delete=models.CASCADE, blank=True)
+    count = models.IntegerField(default=0)
+    

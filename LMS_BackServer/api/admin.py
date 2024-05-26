@@ -57,3 +57,7 @@ class NotificationGroupAdmin(admin.ModelAdmin):
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('group', 'notification_from', 'message', 'is_read', 'created_at')
     search_fields = ('group__name', 'message')
+
+@admin.register(MostPopularBooks)
+class MostPopularBooksAdmin(admin.ModelAdmin):
+    list_display = ('book', 'count')

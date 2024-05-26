@@ -110,7 +110,7 @@ const StaffSignup = () => {
                 }}
                 type="text"
                 ref={usernameRef}
-                className="bg-transparent text-white outline-none lowercase"
+                className="p-0 bg-transparent text-white outline-none lowercase"
               />
             </div>
 
@@ -138,7 +138,7 @@ const StaffSignup = () => {
                 }}
                 type="email"
                 ref={emailRef}
-                className="bg-transparent text-white outline-none lowercase"
+                className="p-0 bg-transparent text-white outline-none lowercase"
               />
             </div>
             <div className="flex w-full gap-2">
@@ -259,7 +259,6 @@ const StaffSignup = () => {
                       );
 
                       if (response) {
-                        console.log(response);
                         setIsRedOrLime(true);
                         setIsLoading(false);
                         setIsResponseError(true);

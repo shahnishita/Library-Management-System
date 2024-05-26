@@ -6,9 +6,11 @@ import axios from "axios";
 import PreLoader from "../Client/Global/PreLoader";
 import NotFound from "../Client/Global/NotFound";
 import Cookies from "js-cookie";
+import SessionExpired from "../Client/Global/SessionExpired";
 
 const DashBoard = () => {
-  const { DecodeUserData, userInfo } = useContext(UserContext);
+  const { DecodeUserData, userInfo, setIsSessionExpired, isSessionExpired } =
+    useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
   const [staffList, setStaffList] = useState([]);
   const [recentRegisterLogs, setRecentRegisterLogs] = useState([]);
@@ -19,7 +21,11 @@ const DashBoard = () => {
       setIsLoading(true);
       document.title = "Admin Dashboard - Library of Congress";
       try {
-        await Promise.all([fetchStaffData(), DecodeUserData(), fetchRecentRegisterLogs()]);
+        await Promise.all([
+          fetchStaffData(),
+          DecodeUserData(),
+          fetchRecentRegisterLogs(),
+        ]);
       } catch (error) {
         setError(error);
       } finally {
@@ -71,17 +77,26 @@ const DashBoard = () => {
     return <PreLoader />;
   }
 
-  if ((!Cookies.get("remember") || !localStorage.getItem("localData")) || ((!checkUserIsInStaffList(userInfo.username, userInfo.uid, userInfo.role)))) {
+  if (
+    !Cookies.get("remember") ||
+    !localStorage.getItem("localData") ||
+    !checkUserIsInStaffList(userInfo.username, userInfo.uid, userInfo.role)
+  ) {
     return <NotFound />;
-     
   }
 
   return (
     <div className="flex">
       <SideBar />
       <div className="flex-grow">
-        <MainDashBoard staffList={staffList} recentLog={recentRegisterLogs} />
+        <MainDashBoard
+          setIsSessionExpired={setIsSessionExpired}
+          staffList={staffList}
+          recentLog={recentRegisterLogs}
+        />
       </div>
+
+      <SessionExpired />
     </div>
   );
 };

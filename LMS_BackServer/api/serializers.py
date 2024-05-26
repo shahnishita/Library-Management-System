@@ -72,3 +72,12 @@ class NotificationGroupSerializer(serializers.ModelSerializer):
     def get_notifications(self, obj):
         notifications = obj.notifications.order_by('-created_at')[:20]
         return NotificationSerializer(notifications, many=True).data
+
+
+class MostPopularBooksSerializer(serializers.ModelSerializer):
+    book = bookSerializer()
+    
+
+    class Meta:
+        model = MostPopularBooks
+        fields = ['book', 'count']

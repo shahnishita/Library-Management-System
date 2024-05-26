@@ -3,13 +3,12 @@ import logo from "../../../assets/img/lmslogo.svg";
 import { UserContext } from "./UserData";
 import Cookies from "js-cookie";
 import LogOut from "../../utils/LogOut";
-import axios from "axios";
 import SessionExpired from "./SessionExpired";
 
 const TopHead = ({ func, active_home, active_books,active_notifications }) => {
   const [isHeadOpened, setIsHeadOpened] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { userInfo, fetchNotifications, isLoggedIn, isSessionExpired, notifications } = useContext(UserContext);
+  const { userInfo, fetchNotifications, isSessionExpired, notifications } = useContext(UserContext);
 
 
 const hasUnreadNotifications = notifications.some(
@@ -20,11 +19,10 @@ const hasUnreadNotifications = notifications.some(
 );
 
 useEffect(() => {
-  if (Cookies.get("remember") !== null || Cookies.get("remember") !== undefined) {
-    fetchNotifications( userInfo.username)
+  if (Cookies.get("remember") !== undefined) {
+    fetchNotifications(userInfo.username)
   }
 }, [])
-
 
 
   const closeHead = () => {
@@ -72,7 +70,7 @@ useEffect(() => {
           <button onClick={() => setIsProfileOpen(!isProfileOpen)}>
             <img
               className="hover:bg-[#282828] shadow-md w-auto h-10 rounded-full"
-              src={userInfo.profile_pic || ""}
+              src={userInfo && userInfo.profile_pic || ""}
               alt="dp"
             />
           </button>
@@ -96,7 +94,7 @@ useEffect(() => {
               >
                 <img
                   className="w-auto h-8 rounded-full "
-                  src={userInfo.profile_pic}
+                  src= {userInfo && userInfo.profile_pic}
                   alt=""
                 />
                 <p className="text-white text-[14px] font-[600] capitalize">

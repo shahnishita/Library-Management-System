@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { UserContext } from "../../Client/Global/UserData";
 import LogOut from "../../utils/LogOut";
 
-
 const SideBar = ({
   activeDashboardTab = true,
   activeReqTab,
@@ -178,6 +177,14 @@ const SideBar = ({
           </a>
         </div>
       </div>
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2">
+        <button
+          onClick={() => LogOut()}
+          className="bg-[#161616] hover:bg-black px-3 py-2 rounded-lg"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
@@ -211,7 +218,7 @@ export const BookDrawer = ({ activeBookDrawer, textStyle, className }) => {
       <a
         href="/admin/book/update"
         className={`${
-          activeBookDrawer === "addCategory"
+          activeBookDrawer === "updateBook"
             ? "bg-blue-500 hover:bg-blue-600"
             : "hover:bg-[#0c0c0c]/80"
         } px-3 py-2 rounded-lg flex items-center justify-start gap-3`}
@@ -232,9 +239,9 @@ export const BookDrawer = ({ activeBookDrawer, textStyle, className }) => {
         <p className={`${textStyle} text-[14px]`}>Update Book</p>
       </a>
       <a
-        href="/admin/book/category/add"
+        href="/admin/book/label"
         className={`${
-          activeBookDrawer === "addCategory"
+          activeBookDrawer === "bookLabel"
             ? "bg-blue-500 hover:bg-blue-600"
             : "hover:bg-[#0c0c0c]/80"
         } px-3 py-2 rounded-lg flex items-center justify-start gap-3`}

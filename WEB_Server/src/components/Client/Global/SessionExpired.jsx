@@ -1,6 +1,7 @@
-import React from "react";
-
-const SessionExpired = ({ isSessionExpired }) => {
+import React, { useContext } from "react";
+import { UserContext } from "./UserData";
+const SessionExpired = () => {
+  const { isSessionExpired } = useContext(UserContext);
   return (
     <div className={`${isSessionExpired ? "animate-fireExpireObject" : "scale-0"}  transition-all flex justify-center  items-center z-50 fixed top-0 left-0 right-0 bottom-0 w-full h-full fixed`}>
       <div className="flex flex-col justify-evenly items-center px-5 py-3 w-[500px] h-[300px] rounded-xl shadow-2xl shadow-[#000000]/40 bg-white text-black">

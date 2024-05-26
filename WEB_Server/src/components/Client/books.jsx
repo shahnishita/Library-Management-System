@@ -12,43 +12,34 @@ import Footer from "./Global/Footer";
 
 
 const Books = () => {
-  const { userInfo, setUserInfo, DecodeUserData } = useContext(UserContext);
+  const { userInfo, DecodeUserData } = useContext(UserContext);
   const { author, title, isAvailable } = useParams();
   const [books, setBooks] = useState([]);
   const [isOpened, setIsOpened] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [IsPreLoading, setIsPreLoading] = useState(true);
   const [ToastContentMain, setToastContentMain] = useState({});
   const [bookInfoPopUp, setBookInfoPopUp] = useState({});
   const [isSearchEmpty, setIsSearchEmpty] = useState(false);
-  const [isUserInfoFetched, setIsUserInfoFetched] = useState(false);
+
 
   useEffect(() => {
-    setIsLoading(true); 
+    setIsPreLoading(true); 
     const fetchData = async () => {
       try {
-        const userData = await DecodeUserData();
-        setUserInfo(userData);
-        setIsUserInfoFetched(true);
-      } catch (error) {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (isUserInfoFetched) {
+        DecodeUserData();
         if (author || title || isAvailable) {
           await fetchSearchBooks();
         } else {
           await fetchBooks();
         }
+        setIsPreLoading(false);
+      } catch (error) {
+        setIsPreLoading(false);
       }
     };
     fetchData();
-    setIsLoading(false);
-  }, [isUserInfoFetched, author, title, isAvailable]);
+  }, []);
+
 
   const fetchSearchBooks = async () => {
     try {
@@ -106,7 +97,7 @@ const Books = () => {
   }, [bookInfoPopUp]);
 
 
-  if (isLoading) {
+  if (IsPreLoading) {
     return <PreLoader />;
   } else {
     return (

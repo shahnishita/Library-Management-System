@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Router } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Home from "./components/Client/home";
 import Login from "./components/Client/auth/login";
@@ -18,8 +18,9 @@ import Settings from "./components/Admin/Settings";
 import Notifications from "./components/Client/notifications";
 import AddBook from "./components/Admin/Book/AddBook";
 import UpdateBook from "./components/Admin/Book/UpdateBook";
-
+import BookLabel from "./components/Admin/Book/BookLabel";
 import HandleQrRequest from "./components/HandleQrRequest";
+
 
 function App() {
   return (
@@ -103,7 +104,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/response/request/:EncryptedRequestData"
+          path="/admin/response/request/:borrow_id"
           element={
             <UserProvider>
               <ResponseRequest />
@@ -142,7 +143,14 @@ function App() {
             </UserProvider>
           }
         />
-        
+        <Route
+          path="/admin/book/label/:id?/:type?"
+          element={
+            <UserProvider>
+              <BookLabel />
+            </UserProvider>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

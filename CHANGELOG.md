@@ -16,3 +16,4 @@ All notable changes to this project will be documented in this file.
 - Notifications feature for users.
 - Session verification endpoint in Django backend.
 - Basic UI/UX design and styling.
+

@@ -18,7 +18,6 @@ const BookInfoPopUp = ({ bookInfo }) => {
         setMainAuthor(authors[0]);
       }
     };
-
     const extractGenre = () => {
       if (bookInfo.genre) {
         const genres = bookInfo.genre.split("$");
@@ -71,8 +70,6 @@ const BookInfoPopUp = ({ bookInfo }) => {
     setIsExpanded(!isExpanded);
   };
 
-  console.log(bookInfo);
-
   return (
     <div className="z-[10] overflow-auto rounded-xl px-7 py-6 text-white fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-55%] md:translate-y-[-52%] w-[90%]  h-[85%] md:h-[90%] bg-[#161616]">
       <div className="hidden lg:block">
@@ -117,21 +114,30 @@ const BookInfoPopUp = ({ bookInfo }) => {
             <div className="flex flex-wrap gap-2">
               {Genre.map((genre, i) => (
                 <p
-                  className="bg-[#161616] rounded-full px-4 py-2 text-sm shadow-lg"
+                  className="bg-[#161616] rounded-full px-4 py-2 xl:text-sm md:text-xs lg:text-[10px] shadow-lg"
                   key={i}
                 >
                   {genre}
                 </p>
               ))}
             </div>
-            {bookInfo.status !== "Pending" ? (bookInfo.isAvailable ?
-              <a href={`/book/borrow/submit/${btoa(JSON.stringify(bookInfo))}`}>
-                <button className="px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
-                  Borrow this book
-                </button>
-              </a> :  <button disabled={true} className="disabled:opacity-70 disabled:hover:bg-[#EE0000] px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
+            {bookInfo.status !== "Pending" ? (
+              bookInfo.isAvailable ? (
+                <a
+                  href={`/book/borrow/submit/${btoa(JSON.stringify(bookInfo))}`}
+                >
+                  <button className="lg:text-md md:text-sm text-sm px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
+                    Borrow this book
+                  </button>
+                </a>
+              ) : (
+                <button
+                  disabled={true}
+                  className="lg:text-md md:text-sm text-sm disabled:opacity-70 disabled:hover:bg-[#EE0000] px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]"
+                >
                   Not available
                 </button>
+              )
             ) : (
               <a href={`/book/borrow/cancel/${btoa(JSON.stringify(bookInfo))}`}>
                 <button className="px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
@@ -169,14 +175,25 @@ const BookInfoPopUp = ({ bookInfo }) => {
           </div>
           <div className="row-span-1 col-span-6">
             {bookInfo.status !== "Pending" ? (
-              <a href={`/book/borrow/submit/${btoa(JSON.stringify(bookInfo))}`}>
-                <button className="mt-6 py-3 w-full bg-[#EE0000] text-white text-xl font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
-                  Borrow this book
+              bookInfo.isAvailable ? (
+                <a
+                  href={`/book/borrow/submit/${btoa(JSON.stringify(bookInfo))}`}
+                >
+                  <button className="lg:text-md md:text-sm text-sm px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
+                    Borrow this book
+                  </button>
+                </a>
+              ) : (
+                <button
+                  disabled={true}
+                  className="lg:text-md md:text-sm text-sm disabled:opacity-70 disabled:hover:bg-[#EE0000] px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]"
+                >
+                  Not available
                 </button>
-              </a>
+              )
             ) : (
               <a href={`/book/borrow/cancel/${btoa(JSON.stringify(bookInfo))}`}>
-                <button className="mt-6 py-3 w-full bg-[#EE0000] text-white text-xl font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
+                <button className="px-4 py-2 w-full bg-[#EE0000] text-white font-bold shadow-lg rounded-full mb-2 hover:bg-[#be0000]">
                   Cancel Request
                 </button>
               </a>

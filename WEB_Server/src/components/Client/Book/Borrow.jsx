@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import NotFound from "../Global/NotFound";
 import { UserContext } from "../Global/UserData";
-import Cookies from "js-cookie";
 
 const Borrow = () => {
   const { isLoggedIn } = useContext(UserContext);

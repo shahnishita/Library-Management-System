@@ -132,12 +132,12 @@ const SignUp = () => {
           });
         });
     } catch (error) {
-      console.log(error);
       setSignUpResponse({
         message: error.response.data.message,
         type: error.response.data.status,
         sub_message: error.response.data.subMessage || "",
       });
+      return null;
     }
   };
 
@@ -394,7 +394,7 @@ const SignUp = () => {
 
                 <div className="col-span-6 sm:col-span-3">
                   <label
-                    htmlFor="Email"
+                    htmlFor="gender"
                     className="block text-sm font-medium text-gray-200"
                   >
                     {" "}
@@ -411,9 +411,8 @@ const SignUp = () => {
                     }
                     disabled={isLoggedIn ? true : false}
                     autoComplete="off"
-                    type="email"
-                    id="Email"
-                    name="email"
+                    id="gender"
+                    name="gender"
                     className={`${
                       isLoggedIn ? "cursor-not-allowed" : ""
                     } mt-1 w-full px-2 py-[8px] outline-none rounded-lg rounded text-md shadow-sm border-gray-700 bg-[#282828] text-gray-200`}

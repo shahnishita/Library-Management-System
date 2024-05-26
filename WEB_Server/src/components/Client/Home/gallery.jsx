@@ -7,7 +7,6 @@ import { FreeMode } from "swiper/modules";
 
 const Gallery = ({ libImg }) => {
 
-  // Handle null or empty array case
   if (!libImg || libImg.length === 0) {
     return null;
   }
@@ -31,7 +30,6 @@ const Gallery = ({ libImg }) => {
           modules={[FreeMode]}
         >
           {libImg.map((item, index) => (
-            // Handle null values in libImg array
             item ? (
               <SwiperSlide key={index}>
                 <div className="h-[220px] group cursor-grab shadow-3xl shadow-[black]">

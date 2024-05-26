@@ -1,0 +1,21 @@
+input, textarea {
+  @apply resize-none outline-none text-sm lg:text-[15px] w-full disabled:cursor-not-allowed bg-[#282828] p-3 rounded-lg w-full;
+}
+
+label {
+  @apply text-sm lg:text-[15px] font-bold mb-1.5;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}

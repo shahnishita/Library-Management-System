@@ -61,7 +61,11 @@ const BorrowRequests = () => {
     return <PreLoader />;
   }
 
-  if ((!Cookies.get("remember") || !localStorage.getItem("localData")) || (nonStaffTypes.includes(Cookies.get("user_type")))) {
+  if (
+    !Cookies.get("remember") ||
+    !localStorage.getItem("localData") ||
+    nonStaffTypes.includes(Cookies.get("user_type"))
+  ) {
     return <NotFound />;
   }
 
@@ -80,7 +84,7 @@ const BorrowRequests = () => {
           isLoading ? "block" : "hidden"
         } fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}
       >
-        <Loader SvgWidth="25px" width={"70px"}/>
+        <Loader SvgWidth="25px" width={"70px"} />
       </div>
     </div>
   );

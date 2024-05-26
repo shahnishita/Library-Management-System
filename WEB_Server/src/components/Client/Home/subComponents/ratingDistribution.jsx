@@ -1,14 +1,17 @@
 import React from "react";
 
 const RatingDistribution = ({ ratings }) => {
-  const totalRatings = ratings.length;
+  const totalRatings = ratings && ratings.length;
   const starsDistribution = {};
 
   for (let i = 1; i <= 5; i++) {
     starsDistribution[i] = 0;
   }
 
-  ratings.forEach((rating) => {
+  ratings && ratings.forEach((rating) => {
+    if (!rating.rating) {
+      return;
+    }
     const stars = Math.round(rating.rating);
     starsDistribution[stars]++;
   });

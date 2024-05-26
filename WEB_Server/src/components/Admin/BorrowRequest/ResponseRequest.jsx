@@ -4,31 +4,42 @@ import SideBar from "../Global/SideBar";
 import { UserContext } from "../../Client/Global/UserData";
 import PreLoader from "../../Client/Global/PreLoader";
 import axios from "axios";
-import BorrowRequests from "../BorrowRequests";
 import Loader from "../../Client/Global/loader";
+import Cookies from "js-cookie";
 
 const ResponseRequest = () => {
-  const { EncryptedRequestData } = useParams();
+  const { borrow_id } = useParams();
   const [requestData, setRequestData] = useState(null);
   const [isPreLoading, setIsPreLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { DecodeUserData } = useContext(UserContext);
 
-  useEffect(() => {
-    const decodedRequestData = JSON.parse(atob(EncryptedRequestData));
-    setRequestData(decodedRequestData);
+  const fetchRequestData = async () => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/admins/borrow/requests/${borrow_id}/`
+      );
 
+      const { user } = response.data;
+      document.title = `${
+        user.first_name && user.last_name
+          ? user.first_name + " " + user.last_name
+          : "@" + user.username
+      } Request - Library of Congress`;
+
+      setRequestData(response.data);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  useEffect(() => {
     const fetchData = async () => {
       setIsPreLoading(true);
-      document.title = `${
-        decodedRequestData.user.first_name && decodedRequestData.user.last_name
-          ? decodedRequestData.user.first_name +
-            " " +
-            decodedRequestData.user.last_name
-          : "@" + decodedRequestData.user.username
-      } Request - Library of Congress`;
       try {
         await DecodeUserData();
+        await fetchRequestData();
+
         setIsPreLoading(false);
       } catch (error) {
         setIsPreLoading(false);
@@ -80,23 +91,24 @@ const ResponseRequestContent = ({ requestData, setIsLoading }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [borrowRequestResponse, setBorrowRequestResponse] = useState({
-    status: "Pending",
-    taken_time: "",
-    handled_by: "",
-    borrow_id: requestData.borrow_id,
-    returned_time: "",
+    status: requestData?.request_status || "",
+    taken_time: null,
+    handled_by: requestData?.request_handled_by?.staffID || "",
+    borrow_id: requestData?.borrow_id || "",
+    returned_time: null,
   });
+
   const [returnedTime, setReturnedTime] = useState(null);
   const [alreadyHandledStaffID, setAlreadyHandledStaffID] = useState(
-    requestData.request_handled_by.staffID || null
+    requestData?.request_handled_by?.staffID || null
   );
   const [serverResponse, setServerResponse] = useState(null);
   const [sendNotificationData, setSendNotificationData] = useState({
     message: "",
     isEmail: false,
     isNotification: false,
-    staffID: requestData.request_handled_by.staffID || "",
-    userUID: requestData.user.userUID || "",
+    staffID: requestData?.request_handled_by?.staffID || "",
+    userUID: requestData?.user?.userUID || "",
     hour: new Date().getHours(),
     subject: "Library of Congress",
   });
@@ -121,7 +133,6 @@ const ResponseRequestContent = ({ requestData, setIsLoading }) => {
         setStaffList([]);
       }
     };
-    // console.log(requestData)
     const debounceFetch = setTimeout(() => {
       fetchStaff();
     }, 300);
@@ -246,19 +257,19 @@ const ResponseRequestContent = ({ requestData, setIsLoading }) => {
                 className={`md:hidden z-[9] w-full h-full absolute bg-gradient-to-r from-[#282828]/90 to-black/80 top-0 left-0 rounded-lg`}
               />
               <img
-                className="md:hidden absolute top-0 left-0 h-full w-full object-cover"
+                className="rounded-lg md:hidden absolute top-0 left-0 h-full w-full object-cover"
                 src={requestData.book.thumbnail}
                 alt=""
               />
               <img
                 src={requestData.book.thumbnail}
-                alt={requestData.book.name}
+                alt={requestData.book.title}
                 className="aspect-[2.5/4] hidden md:block h-56 rounded-md"
               />
               <div className="z-10 overflow-hidden flex flex-col justify-between">
                 <div>
                   <h2 className="text-md md:text-xl font-bold truncate">
-                    {requestData.book.name}
+                    {requestData.book.title}
                   </h2>
                   <p className="text-[12px] md:text-sm text-[#bebebe]">
                     by {requestData.book.author.split("$")[0]}
@@ -371,12 +382,54 @@ const ResponseRequestContent = ({ requestData, setIsLoading }) => {
                       defaultValue={requestData.status}
                       className="outline-none text-[15px] w-full disabled:cursor-not-allowed bg-[#282828] p-3 rounded-lg w-full"
                     >
-                      <option value="Approved">Approved</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Borrowed">Borrowed</option>
-                      <option value="Overdue">Overdue</option>
-                      <option value="Cancelled">Cancelled</option>
-                      <option value="Returned">Returned</option>
+                      <option
+                        disabled={
+                          requestData.status === "Approved" ? true : false
+                        }
+                        value="Approved"
+                      >
+                        Approved
+                      </option>
+                      <option
+                        disabled={
+                          requestData.status === "Pending" ? true : false
+                        }
+                        value="Pending"
+                      >
+                        Pending
+                      </option>
+                      <option
+                        disabled={
+                          requestData.status === "Borrowed" ? true : false
+                        }
+                        value="Borrowed"
+                      >
+                        Borrowed
+                      </option>
+                      <option
+                        disabled={
+                          requestData.status === "Overdue" ? true : false
+                        }
+                        value="Overdue"
+                      >
+                        Overdue
+                      </option>
+                      <option
+                        disabled={
+                          requestData.status === "Cancelled" ? true : false
+                        }
+                        value="Cancelled"
+                      >
+                        Cancelled
+                      </option>
+                      <option
+                        disabled={
+                          requestData.status === "Returned" ? true : false
+                        }
+                        value="Returned"
+                      >
+                        Returned
+                      </option>
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -573,7 +626,7 @@ const ResponseRequestContent = ({ requestData, setIsLoading }) => {
                           staffID: e.target.value,
                         });
                       }}
-                      defaultValue={requestData.request_handled_by.staffID}
+                      defaultValue={requestData?.request_handled_by?.staffID}
                       placeholder="Enter message"
                       className="resize-none outline-none text-[15px] w-full disabled:cursor-not-allowed bg-[#282828] p-3 rounded-lg w-full"
                     />

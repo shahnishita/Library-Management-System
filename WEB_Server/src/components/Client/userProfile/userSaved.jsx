@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { BookDetails } from "../Book/bookInfoPopUp";
 
 const UserSaved = ({ username, send, optionalFunc, saved }) => {
   const PRCT_URL = import.meta.env.VITE_PRC_TOKEN;
   const PRT_URL = import.meta.env.VITE_PR_TOKEN;
   const TOKEN_REQ_CODE = import.meta.env.VITE_TOKEN_REQUEST_CODE;
-  const [isRemoved, setIsRemoved] = useState(false);
   const [removedIndex, setRemovedIndex] = useState([]);
 
   const removeSave = async (id, username, email, index) => {
@@ -33,14 +31,12 @@ const UserSaved = ({ username, send, optionalFunc, saved }) => {
           responseMessage: response.data.message,
           isError: false,
         });
-        setIsRemoved(true);
         setRemovedIndex([...removedIndex, index]);
         setTimeout(() => {
           send({ isSavedRemoveProcessEnabled: false });
         }, 2000);
       }
     } catch (err) {
-      console.log(err);
       send({
         isSavedRemoveProcessEnabled: true,
         responseMessage: err.response.data.message,
@@ -49,9 +45,9 @@ const UserSaved = ({ username, send, optionalFunc, saved }) => {
       setTimeout(() => {
         send({ isSavedRemoveProcessEnabled: false });
       }, 2000);
+      return null;
     }
   };
-
 
   if (saved.length === 0) {
     return (

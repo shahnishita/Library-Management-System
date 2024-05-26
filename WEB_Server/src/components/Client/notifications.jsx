@@ -4,9 +4,7 @@ import Search from "./Global/search";
 import TopHead from "./Global/topHead";
 import { UserContext } from "./Global/UserData";
 import PreLoader from "./Global/PreLoader";
-import Loader from "./Global/loader";
-import Toast from "./Global/Toast";
-import Footer from "./Global/Footer";
+
 
 const Notifications = () => {
   const { DecodeUserData, notifications, userInfo, fetchNotifications } = useContext(UserContext);
@@ -54,7 +52,6 @@ export default Notifications;
 
 export const Body = ({ notifications, userInfo, fetchNotifications }) => {
   const [unreadCount, setUnreadCount] = useState(0);
-  console.log(notifications);
 
   useEffect(() => {
     const unreadNotifications = notifications.reduce((count, group) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import UserReview from "./userProfile/userReview";
@@ -30,10 +30,9 @@ function UserProfile() {
       await fetchSavedBooks();
 
       setUser(user);
-      document.title = `${user.first_name} ${user.last_name} (@${user.username})`
-      
+      document.title = `${user.first_name} ${user.last_name} (@${user.username})`;
     };
-    
+
     fetchData();
   }, []);
 
@@ -49,7 +48,6 @@ function UserProfile() {
     checkUserOwner();
   }, [user]);
 
-
   useEffect(() => {
     window.addEventListener("click", handleClickOutsideMenu);
     return () => {
@@ -57,15 +55,13 @@ function UserProfile() {
     };
   }, []);
 
-
-
   const handleClickOutsideMenu = (event) => {
     const menu = document.getElementById("menu");
     if (menu && !menu.contains(event.target)) {
       setIsOwnerMenuClicked(false);
     }
   };
-  
+
   const fetchHistory = async () => {
     try {
       const response = await axios.get(
@@ -170,7 +166,8 @@ function UserProfile() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsOwnerMenuClicked(!isOwnerMenuClicked)}}
+                    setIsOwnerMenuClicked(!isOwnerMenuClicked);
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +193,10 @@ function UserProfile() {
                 </a>
               </div>
               {isOwnerMenuClicked ? (
-                <div id='menu' className="absolute w-40 px-2 py-2 flex flex-col items-start gap-3 rounded-md text-white right-14 top-3 bg-[#161616]">
+                <div
+                  id="menu"
+                  className="absolute w-40 px-2 py-2 flex flex-col items-start gap-3 rounded-md text-white right-14 top-3 bg-[#161616]"
+                >
                   <button
                     onClick={editProfile}
                     className="rounded-md w-full flex hover:text-gray-300 hover:bg-[#282828] px-3 py-1"
@@ -377,6 +377,7 @@ function UserProfile() {
 
 export default UserProfile;
 
+
 export const fetchUserDatas = async ({ username, setUserNotFound }) => {
   try {
     const response = await axios.get(
@@ -447,6 +448,7 @@ export const handleGender = ({ user, width, height }) => {
     );
   }
 };
+
 
 export const checkLocation = ({
   user,

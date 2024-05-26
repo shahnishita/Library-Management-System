@@ -32,19 +32,15 @@ const QRCodeGenerator = async ({ url, identifier, width = 300, height = 300 }: Q
 
   context.clearRect(0, 0, stickerWidth, stickerHeight);
 
-  // Draw rounded rectangle
   context.fillStyle = '#fff';
   drawRoundedRect(context, 0, 0, stickerWidth, stickerHeight, radius);
   context.fill();
 
-  // Create QR code canvas
   const qrCodeCanvas = document.createElement('canvas');
   await QRCode.toCanvas(qrCodeCanvas, url, { width: width - 40 });
 
-  // Draw QR code on the main canvas
   context.drawImage(qrCodeCanvas, -20, 15); 
 
-  // Draw identifier text with letter spacing
   context.fillStyle = '#000';
   context.font = 'bold 35px sans-serif'; 
   context.textAlign = 'center';

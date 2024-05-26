@@ -28,7 +28,7 @@ const Settings = () => {
     const fetchData = async () => {
       await fetchStaffID();
       setIsLoading(false);
-    }    
+    };
     fetchData();
   }, [userInfo]);
 
@@ -38,7 +38,7 @@ const Settings = () => {
         const response = await axios.get(
           `http://localhost:8000/admins/get/staff/id/?q=${userInfo.username}`
         );
-        setStaffID(response.data.staffID); 
+        setStaffID(response.data.staffID);
       }
     } catch (err) {
       console.error(err);
@@ -81,10 +81,15 @@ const Settings = () => {
               <div className="rounded-lg p-4">
                 {activeTab === "Account" && (
                   <div>
-                    <h2 className="text-xl md:text-2xl font-bold mb-4">Account Settings</h2>
+                    <h2 className="text-xl md:text-2xl font-bold mb-4">
+                      Account Settings
+                    </h2>
                     <form>
                       <div className="mb-4">
-                        <label htmlFor="staffID" className="block text-sm font-medium">
+                        <label
+                          htmlFor="staffID"
+                          className="block text-sm font-medium"
+                        >
                           Staff ID
                         </label>
                         <input

@@ -20,6 +20,14 @@ The Library Management System is a full-stack web application designed to stream
 - **User Management**: Staff can view user profiles, manage borrowing privileges, and handle user requests.
 - **Analytics**: Built-in analytics tools provide insights into library usage, popular books, and user activity.
 
+## Used Technologies
+- React.js
+- Vite
+- Django
+- Python
+- PostgreSQL
+- Tailwind
+
 ## Contributing
 
 Contributions are welcome! If you encounter any issues, have suggestions for improvements, or would like to request additional features for this extension, please feel free to open an issue or submit a pull request on GitHub.

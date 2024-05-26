@@ -2,8 +2,9 @@ import React, { useContext, useState, useRef } from "react";
 import { UserContext } from "../../Client/Global/UserData";
 import axios from "axios";
 import Calendar from "./calender";
+import Cookies from "js-cookie";
 
-const MainDashBoard = ({ staffList, recentLog }) => {
+const MainDashBoard = ({ staffList, recentLog, setIsSessionExpired }) => {
   const { userInfo, fetchUserData } = useContext(UserContext);
   const [isRoleAdder, setIsRoleAdder] = useState(false);
   const [userList, setUserList] = useState([]);
@@ -46,7 +47,6 @@ const MainDashBoard = ({ staffList, recentLog }) => {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -79,8 +79,9 @@ const MainDashBoard = ({ staffList, recentLog }) => {
           isShow: false,
         });
       }, 1500);
-
-      fetchUserData();
+      if (searchInput.userUID === userInfo.uid) {
+        Cookies.remove("remember");
+      }
     } catch (err) {
       setRoleUpdateResponse({
         type: "error",
@@ -97,7 +98,7 @@ const MainDashBoard = ({ staffList, recentLog }) => {
   };
 
   return (
-    <div className="ml-[80px] lg:ml-[240px] w-[calc(100% - 80px] lg:w-[calc(100% - 240px)] bg-[#161616] h-auto py-5 px-5 text-white">
+    <div className="ml-[80px] lg:ml-[240px] w-[calc(100% - 80px] lg:w-[calc(100% - 240px)] bg-[#161616] min-h-screen h-auto py-5 px-5 text-white">
       <div className="w-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
         <div className="grid grid-rows-2 gap-4 col-span-1">
           <div className="p-5 flex flex-col gap-1 rounded-xl bg-[#282828] row-span-1">
@@ -112,7 +113,10 @@ const MainDashBoard = ({ staffList, recentLog }) => {
         <div className="col-span-1 rounded-xl bg-[#282828] p-5 flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <span className="text-md font-bold">Team Directory</span>
-            <a href="" className="text-sm font-bold flex items-center gap-1 bg-blue-500 px-3  hover:bg-blue-600 rounded-sm">
+            <a
+              href=""
+              className="text-sm font-bold flex items-center gap-1 bg-blue-500 px-3  hover:bg-blue-600 rounded-sm"
+            >
               View
             </a>
           </div>
@@ -181,9 +185,12 @@ const MainDashBoard = ({ staffList, recentLog }) => {
         </div>
 
         <div className="col-span-1 rounded-xl bg-[#282828] p-5 flex flex-col gap-4">
-        <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center">
             <span className="text-md font-bold">Recent Activity</span>
-            <a href="" className="text-sm font-bold flex items-center gap-1 bg-blue-500 px-3  hover:bg-blue-600 rounded-sm">
+            <a
+              href=""
+              className="text-sm font-bold flex items-center gap-1 bg-blue-500 px-3  hover:bg-blue-600 rounded-sm"
+            >
               View
             </a>
           </div>
@@ -289,8 +296,11 @@ const MainDashBoard = ({ staffList, recentLog }) => {
                   >
                     <img
                       className="rounded-full h-9"
-                      src={user.profile_pic_url}
-                      alt={`${user.username} image`}
+                      src={
+                        user.profile_pic_url ||
+                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                      }
+                      alt={`DP`}
                     />
                     <div className="flex flex-col justify-start">
                       <p className="text-[13px] truncate">
@@ -310,14 +320,18 @@ const MainDashBoard = ({ staffList, recentLog }) => {
                 disabled
                 className="text-[14px] disabled:cursor-not-allowed bg-[#181818] outline-none w-full px-5 py-4 rounded-xl"
                 type="text"
-                onChange={(e) => {setSearchInput({ ...searchInput, userUID: e.target.value })}}
+                onChange={(e) => {
+                  setSearchInput({ ...searchInput, userUID: e.target.value });
+                }}
                 value={searchInput.username || ""}
               />
               <select
                 name="role"
                 value={searchInput.role || "Admin"}
                 disabled={!isRoleAdder || searchInput.role === "Owner"}
-                onChange={(e) => {setSearchInput({ ...searchInput, role: e.target.value })}}
+                onChange={(e) => {
+                  setSearchInput({ ...searchInput, role: e.target.value });
+                }}
                 className={`text-[14px] disabled:cursor-not-allowed w-full outline-none px-5 py-4 rounded-xl bg-[#181818]`}
               >
                 <option value="Admin">Admin</option>

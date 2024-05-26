@@ -65,9 +65,7 @@ const Content = ({ send, borrowRequests }) => {
               borrowRequests.map((borrowRequest, i) => (
                 <div
                   onClick={() => {
-                    window.location.href = `/admin/response/request/${btoa(
-                      JSON.stringify(borrowRequest)
-                    )}`;
+                    window.location.href = `/admin/response/request/${borrowRequest.borrow_id}`;
                   }}
                   key={i}
                   className={`cursor-pointer bg-[#282828] p-5 rounded-lg mb-4 flex justify-between gap-4 ${
@@ -78,12 +76,12 @@ const Content = ({ send, borrowRequests }) => {
                     <div className="flex items-center">
                       <img
                         src={borrowRequest.book.thumbnail}
-                        alt={borrowRequest.book.name}
+                        alt={borrowRequest.book.title}
                         className="aspect-[2.5/4] h-16 mr-4 rounded-md block md:hidden"
                       />
                       <div className="overflow-hidden">
                         <h2 className="text-xl font-bold truncate">
-                          {borrowRequest.book.name}
+                          {borrowRequest.book.title}
                         </h2>
                         <p className="text-sm text-[#bebebe]">
                           by {borrowRequest.book.author.split("$")[0]}
@@ -112,17 +110,21 @@ const Content = ({ send, borrowRequests }) => {
                       <p>
                         <strong>Return Date:</strong>
                         {borrowRequest.return_date ? (
-                          <span>
-                            {" "}
-                            {new Date(
-                              borrowRequest.return_date
-                            ).toLocaleString()}
-                            ,{" "}
-                            {getTimeDifference(
-                              borrowRequest.return_date,
-                              "left"
-                            )}
-                          </span>
+                          borrowRequest.status === "Returned" ? (
+                            <span> Returned</span>
+                          ) : (
+                            <span>
+                              {" "}
+                              {new Date(
+                                borrowRequest.return_date
+                              ).toLocaleString()}
+                              ,{" "}
+                              {getTimeDifference(
+                                borrowRequest.return_date,
+                                "left"
+                              )}
+                            </span>
+                          )
                         ) : borrowRequest.status === "Approved" ? (
                           " Not collected yet"
                         ) : (

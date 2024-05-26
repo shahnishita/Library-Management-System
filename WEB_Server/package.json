@@ -1,6 +1,6 @@
 {
   "name": "web.lms.pras",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "Web.lms.pras",
   "description": "The Library Management System is a full-stack web application designed to streamline the management of library resources, providing an intuitive interface for both users and library staff. Built with React.js for the frontend and Django for the backend, this system offers a range of features for users to manage their profiles, borrow books online, and interact with other users, while providing comprehensive administrative tools for library staff.",
   "author": "PRAS Samin",
@@ -30,10 +30,8 @@
     "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-advanced-cropper": "^0.19.6",
-    "react-alice-carousel": "^2.9.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
-    "react-slick": "^0.30.2",
     "swiper": "^11.1.1"
   },
   "devDependencies": {

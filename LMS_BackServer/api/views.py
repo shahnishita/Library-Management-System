@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 from django.template.loader import render_to_string
 import jwt
 from django.core.serializers import serialize
-from django.db.models import Q, Case, When
+from django.db.models import Q, Case, When, Max
 from django.views.decorators.http import require_http_methods
 from rest_framework.generics import ListAPIView
 
@@ -50,6 +50,31 @@ def get_random_token(request, gen_code):
         return JsonResponse({'message': 'Invalid request'})
 
 
+@require_http_methods(["GET"])
+def get_popular_book(request):
+    if request.GET.get('u') == "none":
+        most_popular_books = MostPopularBooks.objects.all()
+        serialized_data = []
+        for book in most_popular_books:
+            serialized_book = MostPopularBooksSerializer(book).data
+            serialized_data.append(serialized_book)
+
+        return JsonResponse(serialized_data, safe=False)
+        
+    else:
+        most_popular = MostPopularBooks.objects.aggregate(max_count=Max('count'))
+        max_count = most_popular['max_count']
+        most_popular_books = MostPopularBooks.objects.filter(count=max_count)
+        
+        serialized_data = []
+        for book in most_popular_books:
+            serialized_book = MostPopularBooksSerializer(book).data
+            isSaved = UserSavedBooks.objects.filter(userUID=request.GET.get('u'), book__bookID=serialized_book['book']['bookID'], isSaved=True).exists()
+            serialized_book['is_saved'] = isSaved
+            serialized_data.append(serialized_book)
+
+        return JsonResponse(serialized_data, safe=False)
+
 @csrf_exempt
 def books(request):
     if request.method == 'GET':
@@ -68,7 +93,6 @@ def books(request):
                 book['is_saved'] = saved_book is not None
                 book['borrow_status'] = borrowed_book.status if borrowed_book else False
 
-            # Sorting: saved books first, then the rest ordered by -created_at
             sorted_data = sorted(data, key=lambda x: (not x['is_saved'], -datetime.strptime(x['created_at'], "%Y-%m-%dT%H:%M:%S.%f%z").timestamp()))
 
             return JsonResponse(sorted_data, safe=False)
@@ -102,44 +126,44 @@ def userRatingView(request):
 
 @require_http_methods(["GET"])
 def bookSearch(request):
-    if request.method == 'GET':
-        author = request.GET.get('a')
-        title = str(request.GET.get('t'))
-        is_available = request.GET.get('i')
-
-        if not is_available:
-            return JsonResponse({'message': 'Parameter "i" is missing'}, status=400)
-
-        exclude_words = ['the', 'a', 'an', 'of', 'in', 'and']
-        title_parts = [part for part in title.split() if part.lower() not in exclude_words]
-        title_query = Q()
-        for part in title_parts:
-            title_query |= Q(name__icontains=part)
-
-        if author == 'all':
-            author_query = Q()
-        elif author:
-            author_query = Q(author__icontains=author)
-        else:
-            author_query = None
-
-        if is_available == 'available':
-            find = booksList.objects.filter(title_query, author_query, available=True)
-        elif is_available == 'all':
-            find = booksList.objects.filter(title_query, author_query)
-        else:
-            return JsonResponse({'message': 'Invalid value for parameter "i"'}, status=400)
-
-        serializer = bookSerializer(find, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    else:
+    if request.method != 'GET':
         return JsonResponse({'message': 'Invalid request method'}, status=405)
-    
-    
+
+    author = request.GET.get('a')
+    title = request.GET.get('t')
+    is_available = request.GET.get('i')
+
+    if not is_available:
+        return JsonResponse({'message': 'Parameter "i" is missing'}, status=400)
+    if not title:
+        return JsonResponse({'message': 'Parameter "t" (title) is missing'}, status=400)
+
+    exclude_words = {'the', 'a', 'an', 'of', 'in', 'and'}
+    title_parts = [part for part in title.split() if part.lower() not in exclude_words]
+
+    title_query = Q()
+    if title != 'all':
+        for part in title_parts:
+            title_query |= Q(title__icontains=part)
+
+    author_query = Q()
+    if author != 'all' and author:
+        author_query = Q(author__icontains=author)
+
+    if is_available == 'available':
+        find = booksList.objects.filter(title_query, author_query, isAvailable=True)
+    elif is_available == 'all':
+        find = booksList.objects.filter(title_query, author_query)
+    else:
+        return JsonResponse({'message': 'Invalid value for parameter "i"'}, status=400)
+
+    serializer = bookSerializer(find, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
 @csrf_exempt
 def userSave(request, csrf_token, token):
     if request.method == 'POST':
-        print(request.body)
         csrf_token_obj = CSRFToken.objects.filter(csrf_token=csrf_token).first()
         token_obj = Token.objects.filter(token=token).first()
         
@@ -697,6 +721,7 @@ def update_user_role(request, csrf_token, token):
     else:
         return JsonResponse({"message": "Method Not Allowed"}, status=405)
 
+
 @require_http_methods(["GET"])
 def StaffsInfo(request):
     if request.method == 'GET':
@@ -728,55 +753,221 @@ def bookBorrowAdmin(request):
     else:
         return JsonResponse({"message": "Method Not Allowed"}, status=405)
 
-@csrf_exempt
-def addBook(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        required_fields = ['title', 'author', 'ISBN', 'thumbnail', 'website', 'publisher', 'publishedDate', 'genre', 'language', 'pages', 'description', 'quantity']
-        for field in required_fields:
-            if field not in data:
-                return JsonResponse({"status": "error", "message": f"Missing required field: {field}"}, status=400)
-        
-        try:
-            thumbnail_base64 = data['thumbnail']
-            thumbnail_path = save_image(thumbnail_base64, data['title'], 'thumbnails') if thumbnail_base64 else None
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Failed to save thumbnail: {str(e)}"}, status=500)
-        
-        thumbnail_url = f"http://localhost:8000/{thumbnail_path}" if thumbnail_path else None
-        
-        try:
-            push = booksList(
-                title=data['title'],
-                author=data['author'],
-                ISBN=data['ISBN'],
-                thumbnail=thumbnail_url,
-                website=data['website'],
-                publisher=data['publisher'],
-                publish_date=data['publishedDate'],
-                genre=data['genre'],
-                language=data['language'],
-                pages=data['pages'],
-                description=data['description'],
-                quantity=data['quantity']
-            )
 
-            push.save()
-            return JsonResponse({"status": "success", "message": "Book added successfully", "id": push.bookID, "title": push.title}, status=200)
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Failed to create book: {str(e)}"}, status=500)
+@require_http_methods(["GET"])
+def get_borrow_info_by_borrowID(request, id):
+    if request.method == 'GET':
+        book_borrow = get_object_or_404(BookBorrow, borrow_id=id)
+        serialize = bookBorrowSerializer(book_borrow)
+        return JsonResponse(serialize.data, safe=False, status=200)
+    else:
+        return JsonResponse({"message": "Method Not Allowed"}, status=405)
     
-    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+    
+@csrf_exempt
+def addBook(request, csrf_token, token):
+    if request.method == 'POST':
+        csrf_token_obj = get_object_or_404(CSRFToken, csrf_token=csrf_token)
+        token_obj = get_object_or_404(Token, token=token)
+        
+        if csrf_token_obj and token_obj:
+            csrf_token_obj.delete() and token_obj.delete()
+            
+            data = json.loads(request.body)
+            required_fields = ['title', 'author', 'ISBN', 'thumbnail', 'website', 'publisher', 'publishedDate', 'genre', 'language', 'pages', 'description', 'quantity']
+            for field in required_fields:
+                if field not in data:
+                    return JsonResponse({"status": "error", "message": f"Missing required field: {field}"}, status=400)
+            
+            try:
+                thumbnail_base64 = data['thumbnail']
+                thumbnail_path = save_image(thumbnail_base64, data['title'], 'thumbnails') if thumbnail_base64 else None
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": f"Failed to save thumbnail: {str(e)}"}, status=500)
+            
+            thumbnail_url = f"http://localhost:8000/{thumbnail_path}" if thumbnail_path else None
+            
+            try:
+                push = booksList(
+                    title=data['title'],
+                    author=data['author'],
+                    ISBN=data['ISBN'],
+                    thumbnail=thumbnail_url,
+                    website=data['website'],
+                    publisher=data['publisher'],
+                    publish_date=data['publishedDate'],
+                    genre=data['genre'],
+                    language=data['language'],
+                    pages=data['pages'],
+                    description=data['description'],
+                    quantity=data['quantity']
+                )
+
+                push.save()
+                return JsonResponse({"status": "success", "message": "Book added successfully", "id": push.bookID, "title": push.title}, status=200)
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": f"Failed to create book: {str(e)}"}, status=500)
+        else:
+            return JsonResponse({"message": "Unauthorized request"}, status=401)
+    
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
+
+@csrf_exempt
+def updateBook(request, csrf_token, token):
+    if request.method == 'POST':
+        csrf_token_obj = get_object_or_404(CSRFToken, csrf_token=csrf_token)
+        token_obj = get_object_or_404(Token, token=token)
+        
+        if csrf_token_obj and token_obj:
+            csrf_token_obj.delete() and token_obj.delete()
+
+            book_id = request.GET.get('id')
+            if not book_id:
+                return JsonResponse({"status": "error", "message": "Missing book ID"}, status=400)
+            
+            book = get_object_or_404(booksList, bookID=book_id)
+
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({"status": "error", "message": "Invalid JSON data"}, status=400)
+
+            required_fields = ['title', 'author', 'ISBN', 'thumbnail', 'website', 'publisher', 'publishedDate', 'genre', 'language', 'pages', 'description', 'quantity']
+            for field in required_fields:
+                if field not in data:
+                    return JsonResponse({"status": "error", "message": f"Missing required field: {field}"}, status=400)
+
+            try:
+                if data['thumbnail']:
+                    thumbnail_base64 = data['thumbnail']
+                    thumbnail_path = save_image(thumbnail_base64, data['title'], 'thumbnails')
+                    thumbnail_url = f"http://localhost:8000/{thumbnail_path}"
+                else:
+                    thumbnail_url = book.thumbnail
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": f"Failed to save thumbnail: {str(e)}"}, status=500)
+
+            try:
+                book.title = data['title']
+                book.author = data['author']
+                book.ISBN = data['ISBN']
+                book.thumbnail = thumbnail_url
+                book.website = data['website']
+                book.publisher = data['publisher']
+                book.publish_date = data['publishedDate']
+                book.genre = data['genre']
+                book.language = data['language']
+                book.pages = data['pages']
+                book.description = data['description']
+                book.quantity = data['quantity']
+                book.save()
+
+                return JsonResponse({"status": "success", "message": "Book updated successfully"}, status=200)
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": f"Failed to update book: {str(e)}"}, status=500)
+        else:
+            return JsonResponse({"message": "Unauthorized request"}, status=401)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
 
 @csrf_exempt
 def pushLabel(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         label = data['label']
+        title = data['title']
+        identifier = data['identifier']
         if label:
-            profile_pic_path = save_image(label, "sdf", 'labels')
+            r = save_image(label, (f"{title}-{identifier}"), 'labels')
+            url = f"http://localhost:8000/{r}"
+        book = get_object_or_404(booksList, bookID=identifier)
+        book.label_url = url
+        book.save()
+        return JsonResponse({"message": "success"}, status=200)
 
-        return JsonResponse({"message": "success", "id": "014526"}, status=200)
+
+@require_http_methods(["GET", "POST"])
+@csrf_exempt
+def get_or_create_book_label(request):
+    reqID = request.GET.get('id')
+    req_type = request.GET.get('type')
+
+    if not reqID:
+        return JsonResponse({"message": "Missing query parameter 'id'", "sub_message": "You need to provide an 'id' query parameter to get the label."}, status=400)
+
+    if req_type == 'get':
+        book = booksList.objects.filter(bookID=reqID).first()
+        if not book:
+            return JsonResponse({"message": "Book not found", "sub_message": "The book with the provided ID was not found."}, status=404)
+        if not book.label_url:
+            return JsonResponse({"message": "Label not generated yet", "sub_message": "The label for this book has not been generated yet."}, status=404)
+        
+        label = book.label_url
+        title = book.title
+        return JsonResponse({"id": reqID, "title": title, "label": label}, safe=False, status=200)
+
+    elif req_type == 'create':
+        csrf_token = request.GET.get('csrf_token')
+        token = request.GET.get('token')
+
+        if not csrf_token or not token:
+            return JsonResponse({"message": "Missing query parameter 'csrf_token' or 'token'", "sub_message": "Both 'csrf_token' and 'token' query parameters are required."}, status=400)
+
+        csrf_token_obj = CSRFToken.objects.filter(csrf_token=csrf_token).first()
+        token_obj = Token.objects.filter(token=token).first()
+
+        if csrf_token_obj and token_obj:
+            csrf_token_obj.delete()
+            token_obj.delete()
+            try:
+                
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({"message": "Invalid JSON", "sub_message": "The request body contains invalid JSON."}, status=400)
+
+            book = booksList.objects.filter(bookID=reqID).first()
+            if not book:
+                return JsonResponse({"message": "Book not found", "sub_message": "The book with the provided ID was not found."}, status=404)
+            title = book.title
+            new_label_data = data.get('label')
+
+            if not new_label_data:
+                return JsonResponse({"message": "Missing 'label' data in request body", "sub_message": "The 'label' field is required in the request body."}, status=400)
+
+            generate_new_label = save_image(new_label_data, f"{title}-{reqID}", 'labels')
+
+            if book.label_url:
+                current_label = book.label_url.split('/')[-1]
+                media_dir = os.path.join(settings.MEDIA_ROOT, 'labels')
+                current_label_path = os.path.join(media_dir, current_label)
+
+                if os.path.exists(current_label_path):
+                    os.remove(current_label_path)
+
+            book.label_url = os.path.join(settings.BASE_URL, generate_new_label)
+            book.save()
+
+            return JsonResponse({"id": reqID, "title": title, "label": book.label_url}, safe=False, status=200)
+
+    return JsonResponse({"message": "Method Not Allowed", "sub_message": "The method is not allowed for the requested URL."}, status=405)
+
+@require_http_methods(["GET"])
+def get_book_info(request):
+    query_param = request.GET.get('q')
+    
+    if not query_param:
+        return JsonResponse({"message": "Missing query parameter 'q'"}, status=400)
+    
+    book = booksList.objects.filter(bookID=query_param).first()
+    
+    if not book:
+        return JsonResponse({"status": "not-found", "sub_message": "The book with the provided ID was not found.", "message": "Book not found"}, status=404)
+    
+    serialize = bookSerializer(book)
+    return JsonResponse(serialize.data, safe=False, status=200)
 
 
 @csrf_exempt
@@ -802,23 +993,49 @@ def responseToBorrowRequest(request, csrf_token, token):
         borrowReq = BookBorrow.objects.get(borrow_id=borrow_id)
     except BookBorrow.DoesNotExist:
         return JsonResponse({"message": "Request not found", "type": "error"}, status=404)
-
+    
+    book = get_object_or_404(booksList, bookID=borrowReq.book.bookID)
+    if status == 'Approved':
+        try:
+            most_popular_book = MostPopularBooks.objects.get(book=book)
+            most_popular_book.count += 1
+            most_popular_book.save()
+        except MostPopularBooks.DoesNotExist:
+            MostPopularBooks.objects.create(book=book, count=1)
+                
+        send_notification_to_user(Notification=Notification, NotificationGroup=NotificationGroup, user=borrowReq.user, message=f"You recently requested a book titled {borrowReq.book.title}.Your borrow request has been approved. Please receive your book on time.", staff=get_object_or_404(CustomUser, staffID=handled_by), subject="Request approved")
+        send_email_to_user(staff=get_object_or_404(CustomUser, staffID=handled_by), user=borrowReq.user, message=f"You recently requested a book titled {borrowReq.book.title}.Your borrow request has been approved. Please receive your book on time.", subject="Request approved")
+    elif status == 'Rejected':
+        send_email_to_user(staff=get_object_or_404(CustomUser, staffID=handled_by) ,user=borrowReq.user, message=f"Your borrow request titled {borrowReq.book.title} has been rejected due to some reasons. Please contact the library.", subject="Request rejected")
+        send_notification_to_user( Notification=Notification, NotificationGroup=NotificationGroup, user=borrowReq.user, message=f"Your borrow request titled {borrowReq.book.title} has been rejected due to some reasons. Please contact the library.", staff=get_object_or_404(CustomUser, staffID=handled_by), subject="Request rejected")
+    elif borrowReq.status == 'Approved' and (status == 'Cancelled' or status == 'Pending'):
+        most_popular_book = MostPopularBooks.objects.get(book=book)
+        most_popular_book.count -= 1
+        most_popular_book.save()
+    
     borrowReq.status = status
+    
     
     if not handled_by:
         borrowReq.request_handled_by = borrowReq.request_handled_by
     else:
         borrowReq.request_handled_by = get_object_or_404(CustomUser, staffID=handled_by)
 
+    borrowed_for_days = int(borrowReq.borrowed_for)
+
     if not taken_time:
         borrowReq.taken_time = borrowReq.taken_time
     else:
-        borrowReq.taken_time = taken_time
+        taken_time_datetime = datetime.strptime(taken_time, "%Y-%m-%d %H:%M:%S.%f %z")
+        borrowReq.taken_time = taken_time_datetime
+        if not borrowReq.return_date:
+            borrowReq.return_date = taken_time_datetime + timedelta(days=borrowed_for_days)
 
     if not returned_time:
         borrowReq.returned_time = borrowReq.returned_time
     else:
         borrowReq.returned_time = returned_time
+        
     borrowReq.save()
     return JsonResponse({"message": "Process success", "type": "success"}, status=200)
 
@@ -838,7 +1055,6 @@ def send_notification(request, csrf_token, token):
         message = data['message']
         userUID = data['userUID']
         staffID = data['staffID']
-        current_hour = data['hour']
         subject = data['subject']
         is_email = data['isEmail']
         is_notification = data['isNotification']
@@ -854,40 +1070,16 @@ def send_notification(request, csrf_token, token):
     
     user = get_object_or_404(CustomUser, userUID=userUID)
 
-    time_of_day = "morning" if current_hour < 12 else "afternoon" if current_hour < 18 else "evening"
-
-    def send_notification_to_user(user, message, staff):
-        group, created = NotificationGroup.objects.get_or_create(user=user, name=user.username)
-        Notification.objects.create(group=group, message=message, notification_from=staff, subject=subject)
-
-    def send_email_to_user(user, message, staff, time_of_day, subject):
-        email_content = render_to_string(
-            'notification.html', 
-            {
-                'notification_body': message,
-                'username': user.username,
-                'notification_from': staff.username,
-                'notification_time': time_of_day
-            }
-        )
-        send_mail(
-            subject,
-            '', 
-            settings.EMAIL_HOST_USER,  # From email
-            [user.email],  # To email
-            html_message=email_content, 
-            fail_silently=False,
-        )
 
     if is_email and not is_notification:
-        send_email_to_user(user, message, staff, time_of_day, subject)
+        send_email_to_user(user, message, staff, subject)
         return JsonResponse({"type": "success", "message": "Email sent successfully"}, status=200)
     elif is_notification and not is_email:
-        send_notification_to_user(user, message, staff)
+        send_notification_to_user(user, message, staff, subject, Notification=Notification, NotificationGroup=NotificationGroup)
         return JsonResponse({"type": "success", "message": "Notification sent successfully"}, status=200)
     elif is_notification and is_email:
-        send_email_to_user(user, message, staff, time_of_day, subject)
-        send_notification_to_user(user, message, staff)
+        send_email_to_user(user, message, staff, subject)
+        send_notification_to_user(user, message, staff, subject, Notification=Notification, NotificationGroup=NotificationGroup)
         return JsonResponse({"type": "success", "message": "Email and notification sent successfully"}, status=200)
     else:
         return JsonResponse({"type": "error", "message": "Please select either email or notification"}, status=200)

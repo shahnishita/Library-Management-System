@@ -178,7 +178,9 @@ const Footer = () => {
             </div>
 
             <div className="relative text-center sm:text-left">
-            <div className="absolute inset-0 flex sm:-left-5 -top-5 -bottom-5 justify-center items-center bg-black/60 text-white text-2xl font-bold rounded-lg">Locked</div>
+              <div className="absolute inset-0 flex sm:-left-5 -top-5 -bottom-5 justify-center items-center bg-black/60 text-white text-2xl font-bold rounded-lg">
+                Locked
+              </div>
               <p className="text-lg font-bold text-white">About Us</p>
 
               <ul className="mt-8 space-y-4 text-sm">
@@ -221,7 +223,9 @@ const Footer = () => {
             </div>
 
             <div className="relative text-center sm:text-left">
-              <div className="absolute z-10 inset-0 flex sm:-left-5 -top-5 justify-center items-center bg-black/60 text-white text-2xl font-bold rounded-lg">Locked</div>
+              <div className="absolute z-10 inset-0 flex sm:-left-5 -top-5 justify-center items-center bg-black/60 text-white text-2xl font-bold rounded-lg">
+                Locked
+              </div>
               <p className="text-lg font-bold text-white">Helpful Links</p>
 
               <ul className="mt-8 space-y-4 text-sm">
@@ -291,12 +295,17 @@ const Footer = () => {
                       prassamin@gmail.com{" "}
                     </span>
                   </a>
-                  <ToolTip left={'-11.5rem'} smLeft={'2.5rem'} ttText={"prassamin@gmail.com"} ttFunc={emailToolTip} />
+                  <ToolTip
+                    left={"-11.5rem"}
+                    smLeft={"2.5rem"}
+                    ttText={"prassamin@gmail.com"}
+                    ttFunc={emailToolTip}
+                  />
                 </li>
                 <li className="relative">
                   <a
-                  onMouseEnter={() => setPhoneToolTip(true)}
-                  onMouseLeave={() => setPhoneToolTip(false)}
+                    onMouseEnter={() => setPhoneToolTip(true)}
+                    onMouseLeave={() => setPhoneToolTip(false)}
                     className="flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
                     href="tel:+8801725314886"
                   >
@@ -319,12 +328,18 @@ const Footer = () => {
                       017XX-XXXXXX
                     </span>
                   </a>
-                  <ToolTip left={'-9.2rem'} smLeft={'6rem'} ttText={"017XX-XXXXXX"} ttFunc={phoneToolTip} />
+                  <ToolTip
+                    left={"-9.2rem"}
+                    smLeft={"6rem"}
+                    ttText={"017XX-XXXXXX"}
+                    ttFunc={phoneToolTip}
+                  />
                 </li>
 
-                <li className="relative cursor-pointer flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
-                onMouseEnter={() => setAddressToolTip(true)}
-                onMouseLeave={() => setAddressToolTip(false)}
+                <li
+                  className="relative cursor-pointer flex items-center justify-center gap-1.5 ltr:sm:justify-start rtl:sm:justify-end"
+                  onMouseEnter={() => setAddressToolTip(true)}
+                  onMouseLeave={() => setAddressToolTip(false)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -349,7 +364,12 @@ const Footer = () => {
                   <address className="-mt-0.5 flex-1 not-italic text-gray-300">
                     Washington, D.C.
                   </address>
-                <ToolTip left={'-9.5rem'} smLeft={'5.5rem'} ttText={"Washington, D.C."} ttFunc={addressToolTip} />
+                  <ToolTip
+                    left={"-9.5rem"}
+                    smLeft={"5.5rem"}
+                    ttText={"Washington, D.C."}
+                    ttFunc={addressToolTip}
+                  />
                 </li>
               </ul>
             </div>
@@ -396,7 +416,10 @@ export default Footer;
 export const ToolTip = ({ ttText, ttFunc, left, smLeft }) => {
   return (
     <div
-    style={{ left: `${left}`, ...(window.innerWidth < 640 ? { left: `${smLeft}` } : {}) }}
+      style={{
+        left: `${left}`,
+        ...(window.innerWidth < 640 ? { left: `${smLeft}` } : {}),
+      }}
       className={`${
         ttFunc ? "block" : "hidden"
       } text-white absolute -top-2 bg-[#161616] px-4 py-2 z-[10] rounded-md after:content-[''] after:z-[-1] after:absolute after:h-3 after:w-3 after:bg-[#161616] after:rotate-45 after:top-[50%] after:transform after:translate-y-[-50%] after:-right-1.5`}

@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
 import SideBar from "../Global/SideBar";
 import { UserContext } from "../../Client/Global/UserData";
 import PreLoader from "../../Client/Global/PreLoader";
 import axios from "axios";
-import BorrowRequests from "../BorrowRequests";
 import Loader from "../../Client/Global/loader";
-import styles from "./AddBook/addBook.module.css";
+import "./Book.css";
 import ImageCropper from "../../Client/userProfile/Edit/cropper";
 import { resizeImage } from "../../Client/userProfile/EditUserProfile";
 import QRCodeGenerator from "../Global/QrCodeGen";
@@ -35,25 +33,24 @@ const AddBook = () => {
 
   if (isPreLoading) {
     return <PreLoader />;
-  }
-  else{
-  const nonStaffTypes = ["guest", "member", "VIP"];
+  } else {
+    const nonStaffTypes = ["guest", "member", "VIP"];
     if (nonStaffTypes.includes(Cookies.get("user_type"))) {
-      return <NotFound/>
-    } 
+      return <NotFound />;
+    }
     return (
       <div className="flex">
         <SideBar activeBookDrawer={"addBook"} activeDashboardTab={false} />
         <div className="flex-grow z-0">
           <Body setIsLoading={setIsLoading} />
         </div>
-          <div
-            className={`${
-              isLoading ? "block" : "hidden"
-            } fixed top-0 left-0 w-full h-full flex items-center justify-center`}
-          >
-            <Loader SvgWidth="25px" width="70px" />
-          </div>
+        <div
+          className={`${
+            isLoading ? "block" : "hidden"
+          } fixed top-0 left-0 w-full h-full flex items-center justify-center`}
+        >
+          <Loader SvgWidth="25px" width="70px" />
+        </div>
       </div>
     );
   }
@@ -70,7 +67,7 @@ export const Body = ({ setIsLoading }) => {
     thumbnail: "",
     website: "",
     publisher: "",
-    publishedDate: "",
+    publishedDate: new Date().toISOString().split("T")[0],
     genre: "",
     language: "",
     pages: 0,
@@ -88,8 +85,22 @@ export const Body = ({ setIsLoading }) => {
     setIsLoading(true);
 
     try {
+      const CSRFResponse = await axios.get(
+        `${import.meta.env.VITE_PRC_TOKEN}${
+          import.meta.env.VITE_TOKEN_REQUEST_CODE
+        }/`
+      );
+      const CSRFToken = CSRFResponse.data.csrf_token;
+
+      const TokenResponse = await axios.get(
+        `${import.meta.env.VITE_PR_TOKEN}${
+          import.meta.env.VITE_TOKEN_REQUEST_CODE
+        }/`
+      );
+      const Token = TokenResponse.data.token;
+
       const response = await axios.post(
-        `http://127.0.0.1:8000/admins/book/add/`,
+        `http://127.0.0.1:8000/admins/book/add/${CSRFToken}/${Token}/`,
         addBookInfo
       );
 
@@ -104,11 +115,12 @@ export const Body = ({ setIsLoading }) => {
         setAddedBookLabel({
           label: qr,
           identifier: response.data.id,
-          title: addBookInfo.title,
         });
 
         await axios.post(`http://127.0.0.1:8000/admins/book/label/add/`, {
           label: qr,
+          identifier: response.data.id,
+          title: addBookInfo.title,
         });
       }
       setServerResponse({
@@ -168,7 +180,6 @@ export const Body = ({ setIsLoading }) => {
   };
 
   const printQR = (base64Str) => {
-    console.log(base64Str);
     const qrImage = new Image();
     qrImage.src = base64Str;
     qrImage.onload = () => {
@@ -263,7 +274,6 @@ export const Body = ({ setIsLoading }) => {
                   </label>
                   <Thumbnail
                     setAddBookInfo={setAddBookInfo}
-                    addBookInfo={addBookInfo}
                   />
                 </div>
                 <div className="flex flex-col lg:col-span-2">
@@ -375,7 +385,7 @@ export const Body = ({ setIsLoading }) => {
                     className="outline-none hover:scale-105 rounded-lg px-4 py-2 bg-blue-500 text-white hover:bg-blue-600"
                     onClick={SubmitBook}
                   >
-                    Add Book
+                    Add
                   </button>
                 </div>
               </form>
@@ -449,9 +459,13 @@ export const Body = ({ setIsLoading }) => {
   );
 };
 
-export const Thumbnail = ({ className, setAddBookInfo, addBookInfo }) => {
+export const Thumbnail = ({
+  thumbnail,
+  className,
+  setAddBookInfo,
+}) => {
   const [file, setFile] = useState(null);
-  const [thumbnailPic, setThumbnailPic] = useState();
+  const [thumbnailPic, setThumbnailPic] = useState(thumbnail || "");
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -463,6 +477,7 @@ export const Thumbnail = ({ className, setAddBookInfo, addBookInfo }) => {
   };
 
   const handleThumbnailPic = async (data) => {
+    setFile(null);
     setThumbnailPic(data.src);
     const newThumbnailPic = await resizeImage({
       imgWidth: 800,
@@ -470,11 +485,14 @@ export const Thumbnail = ({ className, setAddBookInfo, addBookInfo }) => {
       base64Str: data.src,
     });
 
-    setAddBookInfo({ ...addBookInfo, thumbnail: newThumbnailPic });
+    setAddBookInfo((prev) => ({
+      ...prev,
+      thumbnail: newThumbnailPic,
+    }));
   };
 
   return (
-    <div className={className}>
+    <div className={className} style={file !== null ? { zIndex: 10 } : {}}>
       <div className="relative w-auto rounded-lg h-auto bg-[#282828] flex items-center justify-center">
         <img className=" h-[300px] rounded-lg" src={thumbnailPic} alt="" />
         <input

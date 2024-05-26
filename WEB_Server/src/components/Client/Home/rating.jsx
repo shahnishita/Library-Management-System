@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import StarRating from "./subComponents/star";
 import RatingDistribution from "./subComponents/ratingDistribution";
@@ -61,6 +61,9 @@ const Rating = ({
   };
 
   const calculateOverallRating = () => {
+    if (ratings === null) {
+      return;
+    }
     let totalRating = 0;
     ratings.forEach((item) => {
       const rating = item.rating;
@@ -91,7 +94,7 @@ const Rating = ({
                     </h1>
                   </div>
                   <h1 className="text-xl font-bold mt-[3px]">
-                    Total Ratings: {ratings.length}
+                    Total Ratings: {ratings === null ? 0 : ratings.length}
                   </h1>
                 </div>
                 <RatingDistribution ratings={ratings} />
@@ -166,7 +169,7 @@ const Rating = ({
                     </h1>
                   </div>
                   <h1 className="text-xl font-bold mt-[3px]">
-                    Total Ratings: {ratings.length}
+                    Total Ratings: {ratings === null ? 0 : ratings.length}
                   </h1>
                 </div>
                 <RatingDistribution ratings={ratings} />
@@ -297,7 +300,7 @@ const reviewSubmission = async () => {
         }
       );
 
-      await fetchUserData({ uid: response.data.uid });
+      await fetchUserData(response.data.uid);
       await fetchRatings();
       setIsReviewPage(false);
       setIsRatingPosting(false);

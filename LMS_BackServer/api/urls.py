@@ -4,6 +4,7 @@ from .views import *
 
 urlpatterns = [
     path('api/books/', name="Books", view=books),
+    path('api/popular/books/', name="PopularBooks", view=get_popular_book),
     path('api/book/search/', name="BookSearch", view=bookSearch),
     path('api/library/image/', name="LibraryImage", view=LibraryImage),
     path('api/user/rating/', name="UserRating", view=userRatingView),
@@ -27,13 +28,17 @@ urlpatterns = [
     path('admins/staffs/info/', name="Staff Info", view=StaffsInfo),
     path('admins/user/list/', name="User List", view=get_user_list),
     path('admins/borrow/requests/', name="Borrow Requests", view=bookBorrowAdmin),
+    path('admins/borrow/requests/<str:id>/', name="Single Borrow Requests", view=get_borrow_info_by_borrowID),
     path('admins/find/staff/', name="Find Staff", view=get_staff_by_staffID),
     path('admins/get/staff/id/', name="Get Staff ID", view=get_staff_id),
+    path('admins/book/info/', name="Get Book Info", view=get_book_info),
+    path('admins/book/label/', name="Get Or Create Book Label", view=get_or_create_book_label),
     
     path('admins/send/notification/<str:csrf_token>/<str:token>/', name="SendNotification", view=send_notification),
     path('admins/response/borrow/request/<str:csrf_token>/<str:token>/', name="ResponseBorrowRequest", view=responseToBorrowRequest),
     path('admins/user/role/update/<str:csrf_token>/<str:token>/', name="UpdateUser", view=update_user_role),
-    path('admins/book/add/', name="AddBook", view=addBook),
+    path('admins/book/add/<str:csrf_token>/<str:token>/', name="AddBook", view=addBook),
+    path('admins/book/update/<str:csrf_token>/<str:token>/', name="UpdateBook", view=updateBook),
     path('admins/book/label/add/', name="Add Book Label", view=pushLabel),
 ]
 

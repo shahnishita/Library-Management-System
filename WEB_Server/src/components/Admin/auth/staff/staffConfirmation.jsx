@@ -39,7 +39,7 @@ const StaffConfirmation = () => {
                 type="text"
                 ref={CodeRef}
                 onChange={(e) => setStaffCode(e.target.value)}
-                className="bg-transparent text-white outline-none w-[50%]"
+                className="p-0 bg-transparent text-white outline-none w-[50%]"
               />
             </div>
             <div className={`flex w-full gap-2`}>

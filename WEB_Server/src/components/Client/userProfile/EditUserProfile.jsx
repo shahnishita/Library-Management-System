@@ -17,6 +17,7 @@ const EditUserProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    document.title = `Edit Profile(@${username}) - Library of Congress`;
     setIsPreLoading(true);
     const fetchData = async () => {
       const user = await fetchUserDatas({ username });
@@ -158,7 +159,7 @@ const EditUserForm = ({ user, isLoading, setIsLoading }) => {
     type: "",
     sub_message: "",
   })
-  const { fetchUserData, DecodeUserData } = useContext(UserContext);
+  const { fetchUserData } = useContext(UserContext);
 
 
   const SubmitHandler = async (e) => {
@@ -188,15 +189,12 @@ const EditUserForm = ({ user, isLoading, setIsLoading }) => {
         ProfileEditInfo
       );
 
-      await fetchUserData({ uid: response.data.uid });
+      await fetchUserData(response.data.uid);
       setIsLoading(false);
       setEditResponse({
         message: response.data.message,
         type: response.data.status,
       })
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
     } catch (err) {
       setIsLoading(false);
       return null;

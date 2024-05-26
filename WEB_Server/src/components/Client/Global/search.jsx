@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 
-const Search = ({ close, SearchPopUp, isOpen }) => {
+const Search = ({ close, isOpen }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [author, setAuthor] = useState("");
   const [title, setTitle] = useState("");
@@ -22,19 +22,27 @@ const Search = ({ close, SearchPopUp, isOpen }) => {
     }
     const blockedSymbolsPattern = /[<>&"\(\){};\|*#]/g;
 
-    if (author.match(blockedSymbolsPattern) || title.match(blockedSymbolsPattern)) {
+    if (
+      author.match(blockedSymbolsPattern) ||
+      title.match(blockedSymbolsPattern)
+    ) {
       alert("Please do not enter any special characters in the search.");
       return;
     }
 
-    
-    window.location.href = `/books/search/${encodeURIComponent(author === "" ? "all" : author)}/${encodeURIComponent(title === "" ? "all" : title)}/${isChecked ? "available" : "all"}`;
+    window.location.href = `/books/search/${encodeURIComponent(
+      author === "" ? "all" : author
+    )}/${encodeURIComponent(title === "" ? "all" : title)}/${
+      isChecked ? "available" : "all"
+    }`;
   };
-
 
   return (
     <div className={`${!isOpen ? "hidden" : "block"}`}>
-      <div onClick={close} className="w-full h-full absolute top-0 left-0 backdrop-blur-[20px] z-[50]"></div>
+      <div
+        onClick={close}
+        className="w-full h-full absolute top-0 left-0 backdrop-blur-[20px] z-[50]"
+      ></div>
       <div className="fixed text-white right-3 top-2 z-[100]">
         <button onClick={close}>
           <svg
@@ -74,7 +82,7 @@ const Search = ({ close, SearchPopUp, isOpen }) => {
                 Author
               </label>
               <input
-              onChange={(e) => setAuthor(e.target.value)}
+                onChange={(e) => setAuthor(e.target.value)}
                 type="text"
                 className="bg-[#383838] text-white rounded-sm px-2 md:px-1 text-[0.7rem] md:text-[0.8rem] py-2 md:py-1 outline-none"
                 placeholder="Enter author name"
@@ -89,10 +97,9 @@ const Search = ({ close, SearchPopUp, isOpen }) => {
                 Book Title
               </label>
               <input
-              onChange={(e) => 
-                {
-                  setTitle(e.target.value)}
-                }
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
                 type="text"
                 className="bg-[#383838] text-white rounded-sm px-2 md:px-1 text-[0.7rem] md:text-[0.8rem] py-2 md:py-1 outline-none"
                 placeholder="Enter book title"
@@ -126,7 +133,10 @@ const Search = ({ close, SearchPopUp, isOpen }) => {
           >
             Reset
           </button>
-          <button onClick={search} className="text-white bg-[#EE0000] rounded-full px-4 py-[4px] text-[14px] md:text-[15px] font-medium hover:bg-[#CC0000] hover:transition hover:duration-300">
+          <button
+            onClick={search}
+            className="text-white bg-[#EE0000] rounded-full px-4 py-[4px] text-[14px] md:text-[15px] font-medium hover:bg-[#CC0000] hover:transition hover:duration-300"
+          >
             Search
           </button>
         </div>

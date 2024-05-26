@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-hm2to9o2##jk$-j-)528u4s9+595q^js4b)m2glx^5(z4^*(7r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -31,8 +31,6 @@ ALLOWED_HOSTS = [
     '192.168.1.6',
 ]
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -87,10 +85,15 @@ WSGI_APPLICATION = 'LMS_BackServer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'prassamin',
+        'PASSWORD': 'pushpita',
+        'HOST': 'localhost', 
+        'PORT': '5432', 
     }
 }
+
 
 
 # Password validation
@@ -194,6 +197,8 @@ CORS_EXPOSE_HEADERS = [
 AUTH_USER_MODEL = 'api.CustomUser'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+BASE_URL = 'http://127.0.0.1:8000'
 
 MEDIA_URL = '/media/'
 
