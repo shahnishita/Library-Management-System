@@ -85,12 +85,15 @@ WSGI_APPLICATION = 'LMS_BackServer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'prassamin',
-        'PASSWORD': 'pushpita',
-        'HOST': 'localhost', 
-        'PORT': '5432', 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'library_db',     # Change this to your MySQL database name
+        'USER': 'root',           # MySQL username (default: 'root')
+        'PASSWORD': 'nishu*2003', # Replace with your MySQL password
+        'HOST': '127.0.0.1',      # Use 'localhost' or '127.0.0.1'
+        'PORT': '3306',           # Default MySQL port
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
